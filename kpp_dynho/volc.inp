@@ -1,0 +1,16 @@
+  numspc     = 14     ;
+  SO2        = 4.0e+2 ;
+  HCL        = 4.5e+1 ;
+  H2O        = 6.0e+3 ;
+  O2         = 2.1e+4 ;
+  O3	     = 2.0e-1 ;
+  H2Oaq	     = 5.0e+2 ;
+  HPLUSaq    = 1.0e-5 ;
+  SO2aq	     = 3.0e-5 ;
+  SO32MINaq  = 2.5e-5 ;
+  SO42MINaq  = 3.5e-5 ;
+  HSO3MINaq  = 1.5e-5 ;
+  FE2PLUSaq  = 2.0e-5 ;
+  FE3PLUSaq  = 1.0e-5 ;
+  DUMMY	     = 5.0e+0 ;
+

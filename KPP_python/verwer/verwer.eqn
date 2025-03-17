@@ -1,0 +1,28 @@
+#EQUATIONS
+
+{1} NO2 + hv = NO + O3P              :5.8e-3 ;
+{2} O3 + NO = NO2               :1.8e-20 ;
+{3} HO2 + NO = OH + NO2         :8.1e-18 ;
+{4} HCHO + hv = 2HO2 + CO       :1.43e-5 ;
+{5} HCHO + hv = CO + H2         :1.37e-5 ;
+{6} HCHO + OH = HO2 + CO + H2O  :1.0e-17 ;
+{7} ALD2 + hv = CH3O2 + HO2 + CO  :2.2e-6 ;
+{8} ALD2 + OH = C2O3            :1.6e-17 ;
+{9} C2O3 + NO  = CH3O2 + XO2 
+                       +  NO2    :1.1e-17  ;
+{10} C2O3 + NO2 = PAN          :6.1e-18  ;
+{11} PAN = C2O3 + NO2          :3.7e-4  ;
+{12} CH3O2 + NO = CH3O + NO2  :8.1e-18  ;
+{13} CH3O + O2 = HCHO + HO2   :3.1e-2  ;
+{14} NO2 + OH = HNO3           :1.1e-17  ;
+{15} O3P + O2 + AIR = O3         :8.0e4  ;
+{16} O3 + hv = O1D             :5.8e-6  ;
+{17} O3 + hv = O3P             :2.9e-4  ;
+{18} O1D + H2O = 2OH           :1.7e6  ;
+{19} O1D + AIR = O3P           :7.4e9  ;
+{20} SO2 + OH = SO4 + HO2      :8.4e-19 ;
+{21} NO3 + hv = NO                  :3.5e-2  ;
+{22} NO3 + hv= NO2 + O3P           :9.6e-2  ;
+{23} NO2 + O3 = NO3    : 3.2e-23 ;
+{24} NO3 + NO2 = N2O5    : 1.2e-18 ;
+{25} N2O5 = NO3 + NO2   : 5.2e-2 ;

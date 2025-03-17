@@ -1,0 +1,164 @@
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# User: Set here the F90 compiler and options
+#       Pedefined compilers: INTEL, PGF, HPUX, LAHEY
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+COMPILER = GNU
+#COMPILER = LAHEY
+#COMPILER = INTEL
+#COMPILER = PGF
+#COMPILER = HPUX
+
+FC_GNU     =  gfortran
+FOPT_GNU   = -cpp -O -pg -fbounds-check -fimplicit-none  -Wall #-ftrace=full
+FC_LAHEY   = lf95
+#FOPT_LAHEY = -Cpp --pca -O
+FOPT_LAHEY = -Cpp --chk a,e,s,u --pca --ap -O0 -g --trap --trace --chkglobal
+FC_INTEL   = ifort 
+#FOPT_INTEL = -cpp -O -mp -pc80 -prec_div -tpp7
+FOPT_INTEL = -cpp -O0 -implicitnone -ftrapuv \
+              -debug all -check all -warn all
+FC_PGF     = pgf90
+#FOPT_PGF   = -Mpreprocess -O -fast -pc 80 -Kieee
+FOPT_PGF   = -Mpreprocess -O0 -Mbounds -Mchkfpstk -Mchkptr -Mchkstk \
+             -Ktrap=fp -pc 80 -Kieee
+FC_HPUX    = f90
+FOPT_HPUX  = -O -u +Oall +check=on
+
+# define FULL_ALGEBRA for non-sparse integration
+FC   = $(FC_$(COMPILER))
+FOPT = $(FOPT_$(COMPILER)) # -DFULL_ALGEBRA
+
+LIBS =
+#LIBS = -llapack -lblas
+
+# Command to create Matlab mex gateway routines 
+# Note: use $(FC) as the mex Fortran compiler
+MEX  = mex
+
+GENSRC = verwer_Precision.f90  \
+	 verwer_Parameters.f90     \
+	 verwer_Global.f90  
+
+GENOBJ = verwer_Precision.o    \
+	 verwer_Parameters.o       \
+	 verwer_Global.o     
+
+FUNSRC = verwer_Function.f90 
+FUNOBJ = verwer_Function.o 
+
+JACSRC = verwer_JacobianSP.f90  verwer_Jacobian.f90
+JACOBJ = verwer_JacobianSP.o    verwer_Jacobian.o
+
+HESSRC = verwer_HessianSP.f90   verwer_Hessian.f90
+HESOBJ = verwer_HessianSP.o     verwer_Hessian.o
+
+STMSRC = verwer_StoichiomSP.f90 verwer_Stoichiom.f90 
+STMOBJ = verwer_StoichiomSP.o   verwer_Stoichiom.o
+
+UTLSRC = verwer_Rates.f90 verwer_Util.f90 verwer_Monitor.f90
+UTLOBJ = verwer_Rates.o   verwer_Util.o   verwer_Monitor.o
+
+LASRC  = verwer_LinearAlgebra.f90 
+LAOBJ  = verwer_LinearAlgebra.o   
+
+STOCHSRC = verwer_Stochastic.f90 
+STOCHOBJ = verwer_Stochastic.o 
+
+MAINSRC = verwer_Main.f90   verwer_Initialize.f90   verwer_Integrator.f90 verwer_Model.f90
+MAINOBJ = verwer_Main.o     verwer_Initialize.o     verwer_Integrator.o   verwer_Model.o 
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# User: modify the line below to include only the
+#       objects needed by your application
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ALLOBJ = $(GENOBJ) $(FUNOBJ) $(JACOBJ) $(HESOBJ) $(STMOBJ) \
+	 $(UTLOBJ) $(LAOBJ)
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# User: modify the line below to include only the
+#       executables needed by your application
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+all:    exe
+
+exe:	$(ALLOBJ) $(MAINOBJ) 
+	$(FC) $(FOPT) $(ALLOBJ) $(MAINOBJ) $(LIBS) -o verwer.exe
+
+stochastic:$(ALLOBJ) $(STOCHOBJ) $(MAINOBJ)
+	$(FC) $(FOPT) $(ALLOBJ) $(STOCHOBJ) $(MAINOBJ) $(LIBS) \
+	-o verwer_stochastic.exe
+
+mex:    $(ALLOBJ)
+	$(MEX) FC#$(FC) -fortran -O verwer_mex_Fun.f90     $(ALLOBJ)
+	$(MEX) FC#$(FC) -fortran -O verwer_mex_Jac_SP.f90  $(ALLOBJ)
+	$(MEX) FC#$(FC) -fortran -O verwer_mex_Hessian.f90 $(ALLOBJ)
+
+clean:
+	rm -f verwer*.o verwer*.mod \
+	verwer*.dat verwer.exe verwer*.mexglx \
+	verwer.map
+
+distclean:
+	rm -f verwer*.o verwer*.mod \
+	verwer*.dat verwer.exe verwer.map \
+	verwer*.f90 verwer_*.mexglx
+
+verwer_Precision.o: verwer_Precision.f90 
+	$(FC) $(FOPT) -c $<
+
+verwer_Parameters.o: verwer_Parameters.f90 \
+	            verwer_Precision.o
+	$(FC) $(FOPT) -c $<
+
+verwer_Monitor.o: verwer_Monitor.f90 \
+	             verwer_Precision.o
+	$(FC) $(FOPT) -c $<
+
+verwer_Global.o: verwer_Global.f90 \
+	            verwer_Parameters.o verwer_Precision.o
+	$(FC) $(FOPT) -c $<
+
+verwer_Initialize.o: verwer_Initialize.f90  $(GENOBJ) 
+	$(FC) $(FOPT) -c $<
+
+verwer_Function.o: verwer_Function.f90  $(GENOBJ) 
+	$(FC) $(FOPT) -c $<
+
+verwer_Stochastic.o: verwer_Stochastic.f90  $(GENOBJ) 
+	$(FC) $(FOPT) -c $<
+
+verwer_JacobianSP.o: verwer_JacobianSP.f90 $(GENOBJ)
+	$(FC) $(FOPT) -c $<
+
+verwer_Jacobian.o: verwer_Jacobian.f90  $(GENOBJ) verwer_JacobianSP.o
+	$(FC) $(FOPT) -c $<
+
+verwer_LinearAlgebra.o: verwer_LinearAlgebra.f90 $(GENOBJ) verwer_JacobianSP.o
+	$(FC) $(FOPT) -c $<
+
+verwer_Rates.o: verwer_Rates.f90  $(GENOBJ) 
+	$(FC) $(FOPT) -c $<
+
+verwer_HessianSP.o: verwer_HessianSP.f90  $(GENOBJ)
+	$(FC) $(FOPT) -c $<
+
+verwer_Hessian.o:  verwer_Hessian.f90 $(GENOBJ) verwer_HessianSP.o
+	$(FC) $(FOPT) -c $<
+
+verwer_StoichiomSP.o: verwer_StoichiomSP.f90 $(GENOBJ)
+	$(FC) $(FOPT) -c $<
+
+verwer_Stoichiom.o: verwer_Stoichiom.f90  $(GENOBJ) verwer_StoichiomSP.o
+	$(FC) $(FOPT) -c $<
+
+verwer_Util.o: verwer_Util.f90  $(GENOBJ) verwer_Monitor.o
+	$(FC) $(FOPT) -c $<
+
+verwer_Main.o: verwer_Main.f90  $(ALLOBJ) verwer_Initialize.o verwer_Model.o verwer_Integrator.o
+	$(FC) $(FOPT) -c $<
+
+verwer_Model.o: verwer_Model.f90  $(ALLOBJ) verwer_Integrator.o
+	$(FC) $(FOPT) -c $<
+
+verwer_Integrator.o: verwer_Integrator.f90  $(ALLOBJ)
+	$(FC) $(FOPT) -c $<

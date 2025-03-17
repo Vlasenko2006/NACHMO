@@ -1,0 +1,40 @@
+name: gpuenv
+
+channels:
+  - nvidia
+  - pytorch
+  - conda-forge
+
+dependencies:
+  - python=3.09
+  - pip
+  - pytorch-cuda=11.7
+  - pytorch=1.13
+  - pre-commit
+  - black
+  - isort
+  - flake8
+  - tensorboard
+  - torchvision>=0.14
+  - lightning
+  - matplotlib
+  - ipython
+  - jupyterlab
+  - scikit-learn
+  - pandas
+  - hydra-core
+  - gitpython
+  - numpy
+  - seaborn
+  - pillow
+  - coverage
+  - tqdm
+  - pylint
+  - setuptools_scm
+  - pytest
+  - omegaconf
+  - pytest-cov
+  - git
+  - pip:
+      - torch-tb-profiler
+      - git+https://codebase.helmholtz.cloud/m-dml/mdml-tools.git

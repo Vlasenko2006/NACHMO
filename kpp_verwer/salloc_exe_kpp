@@ -1,0 +1,14 @@
+#!/bin/bash  
+#SBATCH   --account=gg0302
+#SBATCH   --nodes=1
+#SBATCH   -n 40
+#SBATCH   --partition=compute
+#SBATCH   --time=04:00:00           
+#SBATCH   -J  kpp               # Specify job name
+
+
+echo "Start kpp script execution at $(date)"
+
+srun ./verwer.exe
+
+

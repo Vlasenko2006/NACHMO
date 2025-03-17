@@ -1,0 +1,6 @@
+The integrator naming conventions:
+
+*.def = definition file
+*.f   = Fortran 77 source code
+*.f90 = Fortran 90 source code
+*.c   = C source code

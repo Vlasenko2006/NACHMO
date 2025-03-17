@@ -1,0 +1,85 @@
+[build-system]
+requires = ["setuptools>=45", "setuptools_scm[toml]>=6.2"]
+build-backend = "setuptools.build_meta"
+
+
+[project]
+name = "mdml-tools"
+dynamic = ["version", "readme"]
+authors = [
+  { name="Andrey", email="andrey.vlasenko@hereon.de" },
+]
+description = "Common tools and pattern we use in our projects at m-dml."
+requires-python = ">=3.9"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Operating System :: OS Independent",
+]
+
+
+[project.urls]
+"Homepage" = "https://codebase.helmholtz.cloud/m-dml/nachmo_coding"
+
+
+
+[tool.setuptools]
+packages = ["nachmo_mlp"]
+
+
+[tool.setuptools_scm]
+write_to = "nachmo_mlp/_version.py"
+
+
+[tool.setuptools.dynamic]
+readme = {file = ["README.md"]}
+
+
+[tool.vulture]
+exclude = ["conf/", "data/", "docs/", "notebooks/", "output*/", "logs/", "tests/"]
+make_whitelist = false
+min_confidence = 80
+paths = ["nachmo_mlp/"]
+sort_by_size = true
+verbose = false
+ignore_names = ["args", "kwargs"]
+
+
+[tool.pylint]
+max-line-length = 120
+exclude-protected = ["_asdict", "_fields", "_replace", "_source", "_make", "_target_"]
+logging-format-style = "new"
+disable=[
+    "logging-fstring-interpolation",
+    "too-many-branches",
+    "too-many-statements",
+    "logging-fstring-interpolation",
+    "too-many-locals",
+    "unspecified-encoding",
+    "too-many-ancestors",
+    "too-many-instance-attributes",
+    "too-many-public-methods",
+    "too-many-arguments",
+    "missing-module-docstring",  # docstrings are handled by interrogate, so we don't need pylint to check them again
+    "missing-class-docstring",
+    "missing-function-docstring",
+    "eval-used",
+    "no-member",
+    "use-dict-literal",
+    "anomalous-backslash-in-string",
+    "too-many-lines",
+]
+good-names=["lr", "i", "j", "k", "t0", "df", "p", "q", "register_kl", "kl_divergence"]
+generated-members=["torch.*"]
+ignore = ["tests", "_version.py", "docs", "notebooks", "data", "conf", "output*", "logs", "build"]
+
+
+[tool.isort]
+profile = "black"
+src_paths = ["nachmo_mlp", "tests"]
+line_length = 120
+force_alphabetical_sort_within_sections = true
+
+
+[tool.black]
+line-length = 120
+target-version = ['py39', 'py310']

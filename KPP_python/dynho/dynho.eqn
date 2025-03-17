@@ -1,0 +1,6 @@
+#EQUATIONS
+{1} H2O2 + hv = 2 OH                :  3.0E-5 ;
+{2} H2O2 + OH = HO2 + H2O           :  1.7E-12 ;
+{3} HO2 + HO2 = H2O2 + O2           :  3.1E-12  ;
+{4} OH + HO2 = H2O + O2 		:  1.1E-10 ;
+

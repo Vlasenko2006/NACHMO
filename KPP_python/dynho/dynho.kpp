@@ -1,0 +1,8 @@
+#MODEL      dynho
+#INTEGRATOR rosenbrock 
+#LANGUAGE   Fortran90
+#DRIVER     general
+#JACOBIAN   SPARSE_LU_ROW
+#HESSIAN    on
+#STOICMAT   on
+#DOUBLE     on

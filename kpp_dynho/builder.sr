@@ -1,0 +1,9 @@
+#!/bin/tcsh
+
+./kpp dynho.kpp
+
+make -fMakefile_volc
+
+rm *.mod
+rm *.o
+

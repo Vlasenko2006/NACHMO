@@ -1,0 +1,40 @@
+#include verwer.spc
+#include verwer.eqn
+
+{#LANGUAGE Fortran90}
+{#INTEGRATOR ros3}
+#INTEGRATOR rosenbrock
+
+#LOOKATALL
+
+#MONITOR  HCHO;
+
+
+#INITVALUES
+  CFACTOR = 2.46E+10; {ppb-to-mcm. This one refers to 1 atm, 25 degreer C, T=298.15}
+  ALL_SPEC = 0;
+  NO         = 200 ;    {range 132-229}
+  NO2        = 0   ;    {range 0-12.5}
+  O3         = 40  ;    {range 20.1-49.7}
+  HCHO       = 100 ;    {range 69.2-148.2}
+  CO         = 300 ;    {range 0 - 1000}
+  ALD2       = 10  ;    {range 1.17 - 85.43}
+  SO2        = 7   ;    {range 1.e-4 -774 }
+  H2O        = 6.0e+3 ;  
+  O2         = 2.1e+4 ;  
+  AIR        = 1.0e+6 ; 
+#INLINE F90_GLOBAL
+	REAL(dp) :: RAD
+#ENDINLINE
+
+   
+#INLINE F90_INIT
+        TSTART = 0
+        TEND = TSTART + 600
+        DT = 60.0
+        TEMP = 298.15
+#ENDINLINE   
+      
+
+ 
+

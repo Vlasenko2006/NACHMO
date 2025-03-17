@@ -1,0 +1,35 @@
+#include dynho.spc 
+#include dynho.eqn
+
+{#LANGUAGE Fortran90}
+#INTEGRATOR rosenbrock
+#DRIVER general}
+
+{#LOOKATALL}
+#LOOKAT H2O2; HO2; OH;
+
+#MONITOR H2O2; HO2; OH;
+
+#INITVALUES
+  CFACTOR = 2.55E+10; {ppb-to-mcm}
+  ALL_SPEC= 1.0E-10;
+{Variable species}
+  HO2        = 0.0 ;
+  H2O2       = 1.0e+3 ;
+  OH         = 0.0 ;
+  H2O        = 6.0e+3 ;
+  O2         = 2.1e+4 ;
+
+#INLINE F90_GLOBAL
+	REAL(dp) :: RAD
+#ENDINLINE
+
+#INLINE F90_INIT
+        TSTART = 0
+        TEND = TSTART + 1.D0*3600.D0 * 1.D-3
+        DT = 3600.D0 * 1.D-5
+        TEMP = 288.15
+#ENDINLINE
+
+
+

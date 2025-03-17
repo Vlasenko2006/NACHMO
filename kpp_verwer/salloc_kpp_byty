@@ -1,0 +1,26 @@
+#!/bin/bash  
+#SBATCH   --nodes=1
+#SBATCH   --cpus-per-task=5
+#SBATCH   --mem=600mb
+#SBATCH   --time=70:00:00           
+#SBATCH   -J  test_bwbatch               # Specify job name
+#SBATCH   --mail-user=giorgio.taverna@kit.edu
+#SBATCH   --mail-type=BEGIN,END,FAIL
+
+tar -C $TMPDIR/ -xvzf $(ws_find data-ssd)/dataset.tgz
+cd $TMPDIR
+
+echo "Generate the data from verwer"
+
+./verwer.exe
+
+mkdir results && cd results
+
+echo "Start kpp script execution at $(date)"
+ 
+kpp ../verwer.dat res # This will generate a bunch of files in the results folder.
+
+
+
+rsync -av $TMPDIR/results $(ws_find data-ssd)/results-${SLURM_JOB_ID}/
+

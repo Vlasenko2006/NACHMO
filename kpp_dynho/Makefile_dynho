@@ -1,0 +1,164 @@
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# User: Set here the F90 compiler and options
+#       Pedefined compilers: INTEL, PGF, HPUX, LAHEY
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+COMPILER = GNU
+#COMPILER = LAHEY
+#COMPILER = INTEL
+#COMPILER = PGF
+#COMPILER = HPUX
+
+FC_GNU     = gfortran
+FOPT_GNU   = -cpp -O -pg -fbounds-check -fimplicit-none  -Wall #-ftrace=full
+FC_LAHEY   = lf95
+#FOPT_LAHEY = -Cpp --pca -O
+FOPT_LAHEY = -Cpp --chk a,e,s,u --pca --ap -O0 -g --trap --trace --chkglobal
+FC_INTEL   = ifort 
+#FOPT_INTEL = -cpp -O -mp -pc80 -prec_div -tpp7
+FOPT_INTEL = -cpp -O0 -implicitnone -ftrapuv \
+              -debug all -check all -warn all -O0 -g -traceback
+FC_PGF     = pgf90
+#FOPT_PGF   = -Mpreprocess -O -fast -pc 80 -Kieee
+FOPT_PGF   = -Mpreprocess -O0 -Mbounds -Mchkfpstk -Mchkptr -Mchkstk \
+             -Ktrap=fp -pc 80 -Kieee
+FC_HPUX    = f90
+FOPT_HPUX  = -O -u +Oall +check=on
+
+# define FULL_ALGEBRA for non-sparse integration
+FC   = $(FC_$(COMPILER))
+FOPT = $(FOPT_$(COMPILER)) # -DFULL_ALGEBRA
+
+LIBS =
+#LIBS = -llapack -lblas
+
+# Command to create Matlab mex gateway routines 
+# Note: use $(FC) as the mex Fortran compiler
+MEX  = mex
+
+GENSRC = dynho_Precision.f90  \
+	 dynho_Parameters.f90     \
+	 dynho_Global.f90  
+
+GENOBJ = dynho_Precision.o    \
+	 dynho_Parameters.o       \
+	 dynho_Global.o     
+
+FUNSRC = dynho_Function.f90 
+FUNOBJ = dynho_Function.o 
+
+JACSRC = dynho_JacobianSP.f90  dynho_Jacobian.f90
+JACOBJ = dynho_JacobianSP.o    dynho_Jacobian.o
+
+HESSRC = dynho_HessianSP.f90   dynho_Hessian.f90
+HESOBJ = dynho_HessianSP.o     dynho_Hessian.o
+
+STMSRC = dynho_StoichiomSP.f90 dynho_Stoichiom.f90 
+STMOBJ = dynho_StoichiomSP.o   dynho_Stoichiom.o
+
+UTLSRC = dynho_Rates.f90 dynho_Util.f90 dynho_Monitor.f90
+UTLOBJ = dynho_Rates.o   dynho_Util.o   dynho_Monitor.o
+
+LASRC  = dynho_LinearAlgebra.f90 
+LAOBJ  = dynho_LinearAlgebra.o   
+
+STOCHSRC = dynho_Stochastic.f90 
+STOCHOBJ = dynho_Stochastic.o 
+
+MAINSRC = dynho_Main.f90   dynho_Initialize.f90   dynho_Integrator.f90 dynho_Model.f90
+MAINOBJ = dynho_Main.o     dynho_Initialize.o     dynho_Integrator.o   dynho_Model.o 
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# User: modify the line below to include only the
+#       objects needed by your application
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ALLOBJ = $(GENOBJ) $(FUNOBJ) $(JACOBJ) $(HESOBJ) $(STMOBJ) \
+	 $(UTLOBJ) $(LAOBJ)
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# User: modify the line below to include only the
+#       executables needed by your application
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+all:    exe
+
+exe:	$(ALLOBJ) $(MAINOBJ) 
+	$(FC) $(FOPT) $(ALLOBJ) $(MAINOBJ) $(LIBS) -o dynho.exe
+
+stochastic:$(ALLOBJ) $(STOCHOBJ) $(MAINOBJ)
+	$(FC) $(FOPT) $(ALLOBJ) $(STOCHOBJ) $(MAINOBJ) $(LIBS) \
+	-o dynho_stochastic.exe
+
+mex:    $(ALLOBJ)
+	$(MEX) FC#$(FC) -fortran -O dynho_mex_Fun.f90     $(ALLOBJ)
+	$(MEX) FC#$(FC) -fortran -O dynho_mex_Jac_SP.f90  $(ALLOBJ)
+	$(MEX) FC#$(FC) -fortran -O dynho_mex_Hessian.f90 $(ALLOBJ)
+
+clean:
+	rm -f dynho*.o dynho*.mod \
+	dynho*.dat dynho.exe dynho*.mexglx \
+	dynho.map
+
+distclean:
+	rm -f dynho*.o dynho*.mod \
+	dynho*.dat dynho.exe dynho.map \
+	dynho*.f90 dynho_*.mexglx
+
+dynho_Precision.o: dynho_Precision.f90 
+	$(FC) $(FOPT) -c $<
+
+dynho_Parameters.o: dynho_Parameters.f90 \
+	            dynho_Precision.o
+	$(FC) $(FOPT) -c $<
+
+dynho_Monitor.o: dynho_Monitor.f90 \
+	             dynho_Precision.o
+	$(FC) $(FOPT) -c $<
+
+dynho_Global.o: dynho_Global.f90 \
+	            dynho_Parameters.o dynho_Precision.o
+	$(FC) $(FOPT) -c $<
+
+dynho_Initialize.o: dynho_Initialize.f90  $(GENOBJ) 
+	$(FC) $(FOPT) -c $<
+
+dynho_Function.o: dynho_Function.f90  $(GENOBJ) 
+	$(FC) $(FOPT) -c $<
+
+dynho_Stochastic.o: dynho_Stochastic.f90  $(GENOBJ) 
+	$(FC) $(FOPT) -c $<
+
+dynho_JacobianSP.o: dynho_JacobianSP.f90 $(GENOBJ)
+	$(FC) $(FOPT) -c $<
+
+dynho_Jacobian.o: dynho_Jacobian.f90  $(GENOBJ) dynho_JacobianSP.o
+	$(FC) $(FOPT) -c $<
+
+dynho_LinearAlgebra.o: dynho_LinearAlgebra.f90 $(GENOBJ) dynho_JacobianSP.o
+	$(FC) $(FOPT) -c $<
+
+dynho_Rates.o: dynho_Rates.f90  $(GENOBJ) 
+	$(FC) $(FOPT) -c $<
+
+dynho_HessianSP.o: dynho_HessianSP.f90  $(GENOBJ)
+	$(FC) $(FOPT) -c $<
+
+dynho_Hessian.o:  dynho_Hessian.f90 $(GENOBJ) dynho_HessianSP.o
+	$(FC) $(FOPT) -c $<
+
+dynho_StoichiomSP.o: dynho_StoichiomSP.f90 $(GENOBJ)
+	$(FC) $(FOPT) -c $<
+
+dynho_Stoichiom.o: dynho_Stoichiom.f90  $(GENOBJ) dynho_StoichiomSP.o
+	$(FC) $(FOPT) -c $<
+
+dynho_Util.o: dynho_Util.f90  $(GENOBJ) dynho_Monitor.o
+	$(FC) $(FOPT) -c $<
+
+dynho_Main.o: dynho_Main.f90  $(ALLOBJ) dynho_Initialize.o dynho_Model.o dynho_Integrator.o
+	$(FC) $(FOPT) -c $<
+
+dynho_Model.o: dynho_Model.f90  $(ALLOBJ) dynho_Integrator.o
+	$(FC) $(FOPT) -c $<
+
+dynho_Integrator.o: dynho_Integrator.f90  $(ALLOBJ)
+	$(FC) $(FOPT) -c $<

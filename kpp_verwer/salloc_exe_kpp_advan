@@ -1,0 +1,27 @@
+#!/bin/bash  
+#SBATCH   --nodes=1
+#SBATCH   --cpus-per-task=5
+#SBATCH   --mem=600mb
+#SBATCH   --time=70:00:00           
+#SBATCH   -J  test_bwbatch               # Specify job name
+#SBATCH   --mail-user=giorgio.taverna@kit.edu
+#SBATCH   --mail-type=BEGIN,END,FAIL
+
+
+# The application reads data from dataset on $TMPDIR and writes results
+
+ verwer.exe -input $TMPDIR/dataset/myinput.csv -outputdir $TMPDIR/results
+ 
+
+# Before job completes save results on a workspace
+
+rsync -av $TMPDIR/results $(ws_find data-ssd)/results-${SLURM_JOB_ID}/
+
+cd $TMPDIR
+
+
+echo "Start kpp script execution at $(date)"
+
+./verwer.exe
+
+
