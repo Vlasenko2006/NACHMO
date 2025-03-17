@@ -72,9 +72,6 @@ class OptLayer(nn.Module):
         dc_nn = deepcopy(dc_in).to(self.device)
         c_prev = deepcopy(c_in).to(self.device)
 
-
-       # print("self.max_c.cpu().get_device() = ", self.max_c.cpu().get_device() )
-       # print("self.dc_nn.cpu().get_device() = ", self.dc_nn.cpu().get_device() )
                       
         dc_nn   = (dc_nn   * self.max_c).double().to(self.device)
         c_prev  = (c_prev  * self.max_c).double().to(self.device)
