@@ -15,9 +15,40 @@ Here is a brief summary on the code content and instructions on how to install i
 - model_calculation.py         &nbsp;  &nbsp; &nbsp;   _Evaluates model several timesteps ahead, preserving autograd tape (code dependencies)._
 - train.py                     &nbsp;  &nbsp; &nbsp;  _Contains training and logger subroutines._ 
 - utilities.py                 &nbsp;  &nbsp; &nbsp;   _Loads the data from the harddrive, normalizes it. Returns tensors containing concentrations and normalization factors. This data is used by_ `dataset.py`
-- visualization.py &nbsp;  &nbsp; &nbsp; _ Visualizes NN outputs on the fly during the training _ 
+- visualization.py &nbsp;  &nbsp; &nbsp; _ Visualizes NN outputs on the fly during the training _
 
-## 2. Setting `config.yaml` file
+## 1. Setting Necessary Python Environment
+
+### Installing miniconda (if needed)
+Download the miniconda file:
+
+`wget -O Miniconda.sh https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh`
+
+Install miniconda:
+
+`bash ./Miniconda.sh`
+
+### Install mamba(recommended):
+
+`conda install mamba -n base -c conda-forge`
+
+After installation you have to log out and log in to strand again to activate the conda environment. You
+can check if conda is installed by running `conda --version`. Also the prompt should now start with (base).
+
+### Getting the list of necessary packages
+
+File with necessary packages is `dev_env.yaml`
+
+Create the conda environment:
+
+`mamba env create -f dev_env.yaml`
+
+To activate the environment run `conda activate gpuenv`.
+
+Activate conda environment by runing `conda activate gpuenv` each time when you need these packages. 
+
+
+## 2. Setting experiment configuration in `config.yaml` file
 
 open `config.yaml` In this file find the lists given below and change the default values, if needed. Each item cooresonds to a NN hyperparamter or to the training settings. The names are self-explainable. Anyhow, see comments starting with `#` opposite to corresponding item for more info.  
 
@@ -62,3 +93,6 @@ open `config.yaml` In this file find the lists given below and change the defaul
 - **log_name**: "nul" &nbsp;  &nbsp; &nbsp; # _Name of the directory where the NN stores checkpoints, model, results and hyperparameters._
 - **path_to_data**:
 
+# Run the code
+
+Run `python main.py` from a terminal or the corresponding slurm script `sbatch exec.bash`. 
