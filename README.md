@@ -1,3 +1,8 @@
+# Novel Atmospheric CHemistry MOdel (NACHMO)
+
+## Introduction
+Atmospheric chemistry significantly impacts weather and climate variability. Modeling these processes requires solving stiff chemical kinetic ordinary differential equations (ODEs), which can consume up to 80% of computational time. Machine learning and neural networks offer a way to reduce these computational costs. Our Neural Network NACHMO combines this with novel error-removal techniques using singular value decomposition, quadratic programming, and gating layers. These methods extend the period of low-error estimates and are applicable to any trained NN or stiff ODE emulator.
+
 
 ## Code content
 - chemical_constants_and_parameters.py &nbsp;  &nbsp; &nbsp; _Contains stoichiometry matrices_
