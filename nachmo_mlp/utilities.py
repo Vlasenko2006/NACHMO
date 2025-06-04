@@ -24,8 +24,6 @@ def load_data(path, dtype=torch.float32, normalize=True, species=None, ntimestep
 
     c_all = [np.load(os.path.join(path, s) + ".npy") for s in species]  # load chemical concentrations
 
-   # c_all = c_all[:][:ntimesteps_in_data_set][:]
-
     max_c =[]
     for d in c_all:
         assert d.ndim == 2
