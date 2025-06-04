@@ -52,16 +52,25 @@ def run_validation_with_rmse(cfg: DictConfig,
     in_features = len(cfg.data_config["species"])
     out_features = nrates if cfg.stepper_config["learn_rates"] else in_features
 
-    data, max_c, max_c_old, NSmatrix, Ssur, data = Matrices_for_NN(cfg, path_to_data, n_steps, Smatrix,random_seeder =2024)
-    QPL = OptLayer(Smatrix.T, batch=1, max_c=torch.tensor(max_c_old), device=device, reg_fac=reg_fac)
+    data, max_c, max_c_old, NSmatrix, Ssur, data = Matrices_for_NN(cfg,
+                                                                   path_to_data,
+                                                                   n_steps, 
+                                                                   Smatrix,
+                                                                   random_seeder =2024
+                                                                  )
+                     
+    QPL = OptLayer(Smatrix.T,
+                   batch=1, 
+                   max_c=torch.tensor(max_c_old),
+                   device=device, 
+                   reg_fac=reg_fac
+                  )
 
     ref = get_validation_data(data, cfg, split_the_data=True)
 
     if "cfg.stepper_config.apply_QP_correction" not in locals():
         with open_dict(cfg):
             cfg.stepper_config.update({"apply_QP_correction": str(apply_QP)})
-
-    print("apply_QP = ", apply_QP)
 
     if "stoichiometry_matrix" in cfg.stepper_config:
         del cfg.stepper_config.stoichiometry_matrix
@@ -92,7 +101,7 @@ def run_validation_with_rmse(cfg: DictConfig,
     rmse,rmse_min,rmse_max,rmse_std, len_rmse = MSE_counter_slice_fun(
         model.stepper,
         step_slices,
-        ref[: , :, :],
+        ref,
         rollout_length=rollout_length,
         random_starts=random_starts,
         strategy=cfg.hardw_settings.strategy,
