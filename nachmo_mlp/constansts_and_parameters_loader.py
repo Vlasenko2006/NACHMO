@@ -1,32 +1,43 @@
 import torch
-from torch.utils.data import TensorDataset
-from torch.utils.data import DataLoader
-#from chemical_constants_and_parameters import Smatrix
+from torch.utils.data import TensorDataset, DataLoader
 
+def constants_and_parameters_dataloader(
+    device,
+    Smatrix,
+    Ssur=False,
+    penalty_weights=None,
+    cost_weights=None,
+    dtype=torch.float32
+):
+    """
+    Prepares dataloaders for constants and parameters.
 
-def constants_and_parameters_dataloader(device, Smatrix, Ssur = False, penalty_weights = [False], cost_weights = [False], dtype = torch.float32 ):
-    S = TensorDataset(torch.tensor(Smatrix,dtype = dtype).to(device))
-    epsilon = TensorDataset(torch.tensor([0.000000001],dtype = dtype).to(device))
-    Ssur = TensorDataset(torch.tensor(Ssur,dtype = dtype).to(device))
+    Args:
+        device: The device to move tensors to (e.g., 'cpu' or 'cuda').
+        Smatrix: The main matrix for S.
+        Ssur: The surrogate matrix or value for Ssur (default: False).
+        penalty_weights: List of penalty weights (required).
+        cost_weights: List of cost weights (required).
+        dtype: Data type for tensors (default: torch.float32).
 
-    assert cost_weights, "Specify cost weights!"
+    Returns:
+        List containing dataloaders for [epsilon_dl, S_dl, Ssur_dl, penalty_weights_dl, cost_weights_dl].
+    """
+    if penalty_weights is None:
+        penalty_weights = [False]
+    if cost_weights is None:
+        raise ValueError("Specify cost weights!")
 
-    penalty_weights = TensorDataset(torch.tensor(penalty_weights,dtype = dtype).to(device))
-    cost_weights = TensorDataset(torch.tensor(cost_weights,dtype = dtype).to(device))
+    S_tensor = torch.tensor(Smatrix, dtype=dtype, device=device)
+    epsilon_tensor = torch.tensor([1e-9], dtype=dtype, device=device)
+    Ssur_tensor = torch.tensor(Ssur, dtype=dtype, device=device)
+    penalty_weights_tensor = torch.tensor(penalty_weights, dtype=dtype, device=device)
+    cost_weights_tensor = torch.tensor(cost_weights, dtype=dtype, device=device)
 
+    S_dl = DataLoader(TensorDataset(S_tensor))
+    epsilon_dl = DataLoader(TensorDataset(epsilon_tensor))
+    Ssur_dl = DataLoader(TensorDataset(Ssur_tensor))
+    penalty_weights_dl = DataLoader(TensorDataset(penalty_weights_tensor))
+    cost_weights_dl = DataLoader(TensorDataset(cost_weights_tensor))
 
-    #if not any(weights): 
-    #   weights = TensorDataset(torch.tensor([False],dtype = dtype).to(device))
-    #   print("No cost weights")
-    #elif all(weights):
-    #   weights = TensorDataset(torch.tensor(weights,dtype = dtype).to(device))
-    #   print("Setting cost weights")
-
-    S_dl = DataLoader(S)
-    epsilon_dl = DataLoader(epsilon)
-    Ssur_dl = DataLoader(Ssur)
-    penalty_weights = DataLoader(penalty_weights)
-    cost_weights = DataLoader(cost_weights)        
-
-    return [epsilon_dl, S_dl, Ssur_dl, penalty_weights, cost_weights]
-
+    return [epsilon_dl, S_dl, Ssur_dl, penalty_weights_dl, cost_weights_dl]
