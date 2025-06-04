@@ -1,6 +1,8 @@
 import numpy as np
 import torch
 
+# Computes surrogate stoichiometry matrix
+
 def Ssurrogate(data, max_c, cut, dtype, subtract_mean=True, Error_removal_projection=True, normalize = False):
 
     if subtract_mean:
@@ -13,8 +15,8 @@ def Ssurrogate(data, max_c, cut, dtype, subtract_mean=True, Error_removal_projec
     u, s, v = np.linalg.svd(z.T, full_matrices=False)
 
     if Error_removal_projection == True:
-        if cut > 0: u[:,:-cut] = 0 #s[-1*cut:] = 0  # in the opposite case we check if full Ssur can reproduce chemistry 
-        Ssur =  np.eye(len(s),len(s)) - u @ u.T #np.diag(s) #u @ np.diag(s)
+        if cut > 0: u[:,:-cut] = 0 # in the opposite case we check if full Ssur can reproduce chemistry 
+        Ssur =  np.eye(len(s),len(s)) - u @ u.T 
     else:
         print("cut = ", cut)
         if cut > 0: u[:,-cut :] = 0 #s[-1*cut:] = 0  # in the opposite case we check if full Ssur can reproduce chemistry
