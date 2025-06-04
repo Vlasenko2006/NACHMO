@@ -34,14 +34,10 @@ def main(cfg: DictConfig):  # cfg read from config.yaml, it holds neural network
     # to ensure equal starting conditions 
     pl.seed_everything(2024)
     
-    
-    
     # initiate tensorboard logger
     tb_logger = TensorBoardLogger(cfg.log_name, name=set_experiments_name(cfg), default_hp_metric=False)
     cfg = setting_hyperparameters_for_tb(cfg)
     
-
-
     #Load some network and training settings
     # curriculum - curriculum training schedule
     # nrates - number of reaction rates
@@ -75,13 +71,12 @@ def main(cfg: DictConfig):  # cfg read from config.yaml, it holds neural network
         Smatrix[i, :] = Smatrix[i, :] / max_c[i]
 
 
-
     # Split into training/ test and validation sets
     n_test = int(data.shape[0] * cfg.experiment_config["test_frac"])
     n_val = int(data.shape[0] * cfg.experiment_config["val_frac"])
     n_train = data.shape[0] - n_test - n_val
     train_data, valid_data, test_data = random_split(data, (n_train, n_val, n_test))
-    train_data, valid_data, test_data = train_data[:], valid_data[:], test_data[:]
+
 
     # Compute error-projection matricies from the dataset
     Ssur = Ssurrogate(
@@ -93,7 +88,6 @@ def main(cfg: DictConfig):  # cfg read from config.yaml, it holds neural network
         Error_removal_projection=cfg.data_config.Error_removal_projection, 
         normalize=cfg.data_config.normalize_data
     )
-
 
     parameters_loader = constants_and_parameters_dataloader(
         cfg.net_config.device, 
@@ -134,7 +128,6 @@ def main(cfg: DictConfig):  # cfg read from config.yaml, it holds neural network
         model = RolloutModel(stepper, rollout_length, cfg.net_config.device)
         checkpoint_callback = ModelCheckpoint(save_top_k=-1)
         
-
         model = Lit_train(
             model,
             valid_data,
